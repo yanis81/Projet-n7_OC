@@ -3,6 +3,7 @@ const app = express();
 const { User } = require("./database/mongo"); // permet de ce connecter avec la Database mongo
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const { books } = require("./database/books");
 
 const PORT = 4000; // indication du port utiliser
 
@@ -13,8 +14,8 @@ function sayHi(req, res) {
   res.send("Hello Word");
 }
 
+//Permet de hasher le mot de passe dans la basse de données
 function hashPassword(password) {
-  //Permet de hasher le mot de passe dans la basse de données
   const salt = bcrypt.genSaltSync(10); //Permet de changer le hash meme si 2 utilisateur on le meme Mot de passe
   const hash = bcrypt.hashSync(password, salt);
   return hash;
@@ -79,9 +80,19 @@ function isPasswordCorrect(password, hash) {
   return bcrypt.compareSync(password, hash);
 }
 
+function getBooks(req, res) {
+  res.send(books);
+}
+
+function postBooks(req, res) {
+  
+}
+
 app.get("/", sayHi);
 app.post("/api/auth/signup", signUp); // Requete POST pour l'incription
 app.post("/api/auth/login", login); // Requete POST pour la connexion
+app.get("/api/books", getBooks);
+app.post("/api/books", postBooks);
 
 app.listen(PORT, function () {
   console.log(`Server is running on: ${PORT}`);
