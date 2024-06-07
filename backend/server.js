@@ -24,7 +24,7 @@ const upload = multer({
 
 app.use(cors());
 app.use(express.json()); //Permet de parser le JSON du body
-//app.use("/images", express.static("uploads"));
+app.use("/images", express.static("uploads"));
 
 function sayHi(req, res) {
   res.send("Hello Word");
@@ -104,10 +104,10 @@ function getBooks(req, res) {
 
 //permet de poster de nouveaux livres
 async function postBooks(req, res) {
-  //const file = req.file;
+  const file = req.file;
   const stringifiedBook = req.body.book;
   const book = JSON.parse(stringifiedBook); //parse les données du livre en JSON
-  //book.imageURL = file.path;
+  book.imageURL = file.path;
   try {
     const result = await Book.create(book); //crée le livre dans la base de donnée
     res.send({ message: "Livre enregistrer", book: result }); //renvoi un message de confirmation et les detail du livre poster
