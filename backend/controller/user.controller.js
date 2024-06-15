@@ -1,5 +1,6 @@
 const { User } = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // fonction pour l'inscription au site
 async function signUp(req, res) {
@@ -52,8 +53,20 @@ async function login(req, res) {
   }
   res.send({
     userId: userInDb._id,
-    token: "token",
+    token: generateToken(userInDb._id),
   });
+}
+
+//genere un token d'authentification
+function generateToken(idInDb) {
+  const payload = {
+    userId: idInDb,
+  };
+  const jwtSecret = String(process.env.JWT_SECRET)
+  const token = jwt.sign(payload, jwtSecret, {
+    expiresIn: "1d",
+  });
+  return token;
 }
 
 //Permet de hasher le mot de passe dans la basse de données
@@ -68,4 +81,4 @@ function isPasswordCorrect(password, hash) {
   return bcrypt.compareSync(password, hash);
 }
 
-module.exports = { signUp, login}
+module.exports = { signUp, login };

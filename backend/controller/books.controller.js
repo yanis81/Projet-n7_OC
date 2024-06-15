@@ -1,4 +1,5 @@
 const { Book } = require("../models/Book");
+const jwt = require("jsonwebtoken");
 
 //permet de récupérer tous les livres de la DB
 async function getBooks(req, res) {
@@ -15,17 +16,15 @@ async function getBookById(req, res) {
   try {
     const book = await Book.findById(id);
     if (book == null) {
-    res.status(404).send("livre pas trouver");
-    return
-    } 
+      res.status(404).send("livre pas trouver");
+      return;
+    }
     book.imageUrl = "http://localhost:4000/images/" + book.imageUrl;
     res.send(book);
-  }
-   catch (e) {
+  } catch (e) {
     console.log(e);
     res.status(500).send("quelque chose a mal tourner : " + e.message);
   }
-  
 }
 
 //permet de poster de nouveaux livres
@@ -43,4 +42,24 @@ async function postBooks(req, res) {
   }
 }
 
-module.exports = { postBooks, getBooks, getBookById };
+//Permet de vérifier le token d'autorisation
+function checkToken(req, res, next) {
+  const headers = req.headers;
+  const authorization = headers.authorization;
+  if (authorization == null) {
+    res.status(401).send("Pas d'autorisation");
+    return;
+  }
+  const token = authorization.split(" ")[1];
+  try {
+    const jwtSecret = String(process.env.JWT_SECRET)
+    const tokenPayload = jwt.verify(token, jwtSecret);
+    console.log('tokenPayload',tokenPayload);
+    next();
+  } catch (e) {
+    console.error(e);
+    res.status(401).send("pas d'autorisation");
+  }
+}
+
+module.exports = { postBooks, getBooks, getBookById, checkToken };
