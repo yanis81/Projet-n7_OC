@@ -73,7 +73,7 @@ function checkToken(req, res, next) {
       return;
     }
     req.tokenPayload = tokenPayload;
-    next();
+    next();//permet de passera un autre function en tant que middlewares
   } catch (e) {
     console.error(e);
     res.status(401).send("pas d'autorisation");
