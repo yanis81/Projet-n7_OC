@@ -1,6 +1,12 @@
 const { User } = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const express = require("express");
+
+//Routeur API users
+const usersRouter = express.Router();
+usersRouter.post("/signup", signUp);
+usersRouter.post("/login", login);
 
 // fonction pour l'inscription au site
 async function signUp(req, res) {
@@ -81,4 +87,4 @@ function isPasswordCorrect(password, hash) {
   return bcrypt.compareSync(password, hash);
 }
 
-module.exports = { signUp, login };
+module.exports = { usersRouter };
